@@ -1,0 +1,33 @@
+-- Created by Léo Hackin (leohackin at gmail.com), April 2011
+-- 
+-- # This file is free software. You are free to use this file in any way you like
+-- # However, if you change it you should note in this file that you did and who
+-- # you are, you also need to change the version string if you do. That way
+-- # I will not get support questions for software that is not entirely mine.
+-- 
+-- end.pomo v.0.1a for Pomodoro 0.31 ou maior
+-- 
+-- AppleScript para fechar apps de redes sociais e colocar o Adium como AWAY
+
+-- Uso:
+-- Copie e cole o script no campo END e RESET do Pomodoro
+-- acessíveis em Pomodoro -> Preferences -> Scripts
+
+-- Extendendo:
+-- Para adicionar a abertura de algum aplicativo
+-- 
+-- launch application "<nome-do-processo-da-app>"
+-- 
+-- O nome do processo do software pode ser acessado no Monitor de
+-- Atividade (Activity Monitor). Geralmente ele tem a logo do app
+-- ao lado ou um nome parecido.
+
+-- twitter
+launch application "Twitter"
+
+-- adium
+tell application "System Events" to if exists process "Adium" then
+  tell application "Adium"
+    set the status of every account whose status type is away to the first status whose title is "Available"
+  end tell
+end if

@@ -1,0 +1,70 @@
+-- Created by Léo Hackin (leohackin at gmail.com), April 2011
+-- 
+-- # This file is free software. You are free to use this file in any way you like
+-- # However, if you change it you should note in this file that you did and who
+-- # you are, you also need to change the version string if you do. That way
+-- # I will not get support questions for software that is not entirely mine.
+-- 
+-- start.pomo v.0.1a for Pomodoro 0.31 ou maior
+-- 
+-- AppleScript para abrir apps de redes sociais e colocar o Adium como AVAILABLE
+
+-- Uso:
+-- Copie e cole o script no campo START do Pomodoro
+-- acessíveis em Pomodoro -> Preferences -> Scripts
+
+-- Extendendo:
+-- Para adicionar o fechamento de algum aplicativo
+-- 
+-- tell application "System Events" to if exists process "<nome-da-app>" then
+--   tell application "<nome-da-app>" to quit
+-- end if
+-- 
+-- O nome do processo do software pode ser acessado no Monitor de
+-- Atividade (Activity Monitor). Geralmente ele tem a logo do app
+-- ao lado ou um nome parecido.
+
+-- twitter
+tell application "System Events" to if exists process "Twitter" then
+  tell application "Twitter" to quit
+end if
+
+-- adium
+tell application "System Events" to if exists process "Adium" then
+	tell application "Adium"
+		set stati to every status where title is "Pomodorando"
+		if (count of stati) is 0 then
+			set pomodoro to make new status with properties {title:"Pomodorando", status type:away}
+		else
+			set pomodoro to item 1 of stati
+		end if
+		set status message of pomodoro to "Vou responder em $duration minutos"
+		set autoreply of pomodoro to "Vou responder em $duration minutos"
+		set the status of every account whose status type is available to pomodoro
+	end tell
+end if
+
+-- things: adiciona task na lista today com tags @work e pomodoro
+tell application "Things"
+  set createdPomodoro to ""
+  -- lista tasks que estão na lista de Today
+  repeat with toDo in to dos of list "Today"
+    -- verifica se o pomodoro executado já existe no things
+    if name of toDo is "$pomodoroName" then
+      -- se existir, complementa a task
+      set createdPomodoro to toDo
+      set name of createdPomodoro to name of createdPomodoro & " #$dailyPomodoroDone"
+      set due date of createdPomodoro to (current date)
+      set tag names of createdPomodoro to "@work, pomodoro"
+    end if
+    if name of toDo is "$pomodoroName #$dailyPomodoroDone" then
+      set createdPomodoro to toDo
+    end if
+  end repeat
+  -- cria uma nova task
+  if createdPomodoro is "" then
+    set newToDo to make new to do with properties {name: "$pomodoroName #$dailyPomodoroDone", due date:current date} at beginning of list "Today"
+    set due date of newToDo to (current date)
+    set tag names of newToDo to "@work, pomodoro"
+  end if
+end tell
