@@ -27,7 +27,7 @@ launch application "Twitter"
 
 -- adium
 tell application "System Events" to if exists process "Adium" then
-  tell application "Adium"
-    set the status of every account whose status type is away to the first status whose title is "Available"
-  end tell
+    tell application "Adium"
+        go available
+    end tell
 end if
